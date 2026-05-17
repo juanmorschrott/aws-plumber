@@ -1,0 +1,24 @@
+[project]
+name = "aws-plumber"
+version = "0.1.0"
+description = "A Python CLI toolbox for automating emergency and outage recovery workflows on AWS"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "boto3>=1.43.9",
+    "click>=8.4.0",
+    "rich>=15.0.0",
+    "textual>=8.2.6",
+]
+
+[project.scripts]
+aws-plumber = "aws_plumber.cli:main"
+
+[tool.uv]
+managed = true
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+]
