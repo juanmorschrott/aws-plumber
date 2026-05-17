@@ -1,4 +1,4 @@
-# AWS Plumber
+# AWS Plumber 🔧
 
 AWS Plumber is an open source Python 3.12 CLI toolbox for automating emergency and outage recovery workflows on AWS.
 
@@ -10,9 +10,6 @@ The project is designed to help operators recover infrastructure quickly, safely
 - **Upgrade EBS Disk**: Automated EBS disk upgrade with detach/attach recovery support.
 - **Detect WAF Blocking**: Analyze AWS WAF blocking events and identify problematic rules.
 - Control-plane recovery flows for detach and reattach operations.
-- AWS region selection and credential management.
-- Interactive menu with arrow key navigation.
-- Lemon-acid yellow (#ccff00) aesthetic for improved visibility.
 
 ## Getting Started
 
@@ -41,22 +38,21 @@ Navigate tools with **↑/↓ arrow keys**, select with **Enter**, or use **numb
 
 ```
 aws_plumber/
-├── aws/                      # AWS service integrations
-│   ├── __init__.py          # Module exports: AWSClient, EnhancedAWSClient, WAFClient
-│   ├── client.py            # Base AWSClient: EC2/EBS operations
-│   ├── enhanced_client.py   # EnhancedAWSClient with ALB support
-│   ├── alb_extension.py     # ALB/ELB operations
-│   └── waf_extension.py     # WAFClient: WAF log analysis
+├── aws/                      # AWS service clients (one file per service)
+│   ├── __init__.py          # Public API: EC2Client, WAFClient, ALBClient
+│   ├── ec2.py               # EC2Client: EC2/EBS operations, credentials, region management
+│   ├── waf.py               # WAFClient: WAF v2 log analysis and Web ACL queries
+│   └── alb.py               # ALBClient: ALB/ELBv2 operations
 ├── tools/                    # Tool implementations
 │   ├── registry.py          # Tool registry system
 │   ├── menu.py              # Interactive tool selection menu
 │   ├── disk_upgrade.py      # EBS disk upgrade tool (UC-002)
 │   └── waf_detection.py     # WAF blocking detection tool (UC-004)
 ├── ui/
-│   ├── __init__.py          # UI utilities
+│   ├── __init__.py
 │   └── theme.py             # Styling & UI components
 ├── cli.py                   # CLI entry point
-└── __init__.py              # Package initialization
+└── __init__.py
 ```
 
 ## Available Tools
