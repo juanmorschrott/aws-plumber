@@ -44,7 +44,9 @@ aws_plumber/
 ├── aws/                      # AWS service integrations
 │   ├── __init__.py          # Module exports: AWSClient, EnhancedAWSClient, WAFClient
 │   ├── client.py            # Base AWSClient: EC2/EBS operations
-│   └── extended.py          # Extended services: WAFClient, EnhancedAWSClient
+│   ├── enhanced_client.py   # EnhancedAWSClient with ALB support
+│   ├── alb_extension.py     # ALB/ELB operations
+│   └── waf_extension.py     # WAFClient: WAF log analysis
 ├── tools/                    # Tool implementations
 │   ├── registry.py          # Tool registry system
 │   ├── menu.py              # Interactive tool selection menu
@@ -74,8 +76,7 @@ aws_plumber/
 
 - `docs/use_cases/` – user-facing scenarios and acceptance criteria
 - `docs/skills/` – CLI appearance and aesthetic guidelines
-- `docs/architecture.md` – system architecture and tool registry pattern
 
 ## License
 
-This project is intended to be open source.
+This project is licensed under the [MIT License](LICENSE).
