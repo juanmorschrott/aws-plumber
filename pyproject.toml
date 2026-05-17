@@ -14,11 +14,19 @@ dependencies = [
 [project.scripts]
 aws-plumber = "aws_plumber.cli:main"
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
 [tool.uv]
 managed = true
 
 [dependency-groups]
 dev = [
+    "hatchling>=1.29.0",
     "pytest>=9.0.3",
     "pytest-cov>=7.1.0",
 ]
