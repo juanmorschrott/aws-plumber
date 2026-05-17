@@ -1,8 +1,7 @@
 """AWS service integrations for EC2, EBS, WAF, and ALB operations."""
 
-from .client import AWSClient
-from .enhanced_client import EnhancedAWSClient
-from .waf_extension import WAFClient
-from .alb_extension import ALBClient
+from .ec2 import EC2Client
+from .waf import WAFClient
+from .alb import ALBClient
 
-__all__ = ["AWSClient", "EnhancedAWSClient", "WAFClient", "ALBClient"]
+__all__ = ["EC2Client", "WAFClient", "ALBClient"]

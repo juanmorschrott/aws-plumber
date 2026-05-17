@@ -1,8 +1,7 @@
 """WAF blocking detection tool for identifying WAF-blocked requests."""
 
 from typing import Optional
-from ..aws.enhanced_client import EnhancedAWSClient
-from ..aws.waf_extension import WAFClient
+from ..aws import EC2Client, WAFClient
 from ..ui.theme import (
     print_header, print_success, print_error, print_info, print_warning,
     create_info_table, console, ACCENT_COLOR, create_result_table
@@ -15,20 +14,21 @@ def run_waf_detection(dry_run: bool = False) -> None:
     if dry_run:
         print_info("Dry-run mode enabled: this tool is read-only and will not modify AWS resources.")
 
-    client = EnhancedAWSClient()
+    ec2_client = EC2Client()
 
-    if not client.validate_credentials():
+    if not ec2_client.validate_credentials():
         print_info("Please configure AWS credentials in ~/.aws/credentials or set environment variables")
         return
 
-    if not client.region:
-        region = select_region(client)
+    if not ec2_client.region:
+        region = select_region(ec2_client)
         if not region:
             print_error("Region selection cancelled")
             return
-        client.set_region(region)
     else:
-        client.set_region(client.region)
+        region = ec2_client.region
+
+    waf_client = WAFClient(region=region)
 
     # Select WAF scope
     scope = select_waf_scope()
@@ -38,7 +38,7 @@ def run_waf_detection(dry_run: bool = False) -> None:
 
     # Get WAF Web ACLs
     print_info("Fetching WAF Web ACLs...")
-    web_acls = client.waf_client.list_waf_resources(scope)
+    web_acls = waf_client.list_waf_resources(scope)
 
     if not web_acls:
         print_error(f"No WAF Web ACLs found in {scope} scope")
@@ -52,7 +52,7 @@ def run_waf_detection(dry_run: bool = False) -> None:
 
     # Check logging configuration
     print_info("Checking WAF logging configuration...")
-    logs_config = client.waf_client.get_waf_logs_config(web_acl["ARN"])
+    logs_config = waf_client.get_waf_logs_config(web_acl["ARN"])
 
     if not logs_config:
         print_warning("WAF logging is not enabled")
@@ -78,7 +78,7 @@ def run_waf_detection(dry_run: bool = False) -> None:
 
     # Get blocking events
     print_info("Analyzing recent blocking events (last 15 minutes)...")
-    blocking_events = client.waf_client.get_recent_blocking_events(log_group_name, minutes=15)
+    blocking_events = waf_client.get_recent_blocking_events(log_group_name, minutes=15)
 
     if not blocking_events:
         print_info("No blocking events found in the last 15 minutes")
@@ -88,7 +88,7 @@ def run_waf_detection(dry_run: bool = False) -> None:
     display_blocking_events(blocking_events)
 
 
-def select_region(client: EnhancedAWSClient) -> Optional[str]:
+def select_region(client: EC2Client) -> Optional[str]:
     """Select AWS region interactively."""
     print_info("Fetching available regions...")
     regions = client.get_regions()

@@ -27,6 +27,8 @@ This makes the toolbox easier to extend and helps contributors find the implemen
 
 ## AWS Client Patterns
 
+- **One client class per AWS service.** Each service lives in its own module under `aws_plumber/aws/` (`ec2.py`, `waf.py`, `alb.py`). See `docs/skills/AWS-service-clients-skill.md` for the full convention.
+- **Tools compose clients directly.** A tool instantiates only the service clients it needs; there are no aggregate or enhanced client classes.
 - **Never use `resource.instances.all()` or equivalent unbounded collection calls.** Always pass server-side filters directly to the API call (e.g. `describe_instances(Filters=[...])`) to avoid fetching unnecessary resources and consuming API quota.
 - **Region detection must respect boto3's resolution chain.** Do not force manual region selection if the user already has a region configured via `AWS_DEFAULT_REGION`, `AWS_PROFILE`, or `~/.aws/config`. Only prompt for region when `boto3.session.Session().region_name` returns `None`.
 

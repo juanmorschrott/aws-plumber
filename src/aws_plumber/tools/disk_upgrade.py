@@ -3,7 +3,7 @@
 import sys
 import time
 from typing import Optional
-from ..aws import AWSClient
+from ..aws import EC2Client
 from ..ui.theme import (
     print_header, print_success, print_error, print_info, print_warning,
     create_info_table, console, ACCENT_COLOR
@@ -17,7 +17,7 @@ def run_disk_upgrade(dry_run: bool = False) -> None:
         print_info("Dry-run mode enabled: write operations will be simulated.")
 
     # Initialize AWS client
-    client = AWSClient()
+    client = EC2Client()
 
     # Validate credentials
     if not client.validate_credentials():
@@ -83,7 +83,7 @@ def run_disk_upgrade(dry_run: bool = False) -> None:
         offer_recovery(client, instance, volume, dry_run=dry_run)
 
 
-def select_region(client: AWSClient) -> Optional[str]:
+def select_region(client: EC2Client) -> Optional[str]:
     """Select AWS region interactively."""
     print_info("Fetching available regions...")
     regions = client.get_regions()
@@ -106,7 +106,7 @@ def select_region(client: AWSClient) -> Optional[str]:
     return None
 
 
-def select_instance(client: AWSClient) -> Optional[dict]:
+def select_instance(client: EC2Client) -> Optional[dict]:
     """Select EC2 instance interactively."""
     print_info("Fetching instances...")
     instances = client.get_instances()
@@ -173,7 +173,7 @@ def display_instance_details(instance: dict) -> None:
     console.print(create_info_table(details))
 
 
-def wait_for_volume_modification(client: AWSClient, volume_id: str, timeout: int = 600) -> bool:
+def wait_for_volume_modification(client: EC2Client, volume_id: str, timeout: int = 600) -> bool:
     """Wait for volume modification to complete."""
     print_info("Waiting for volume modification to complete (this may take several minutes)...")
     start_time = time.time()
@@ -210,7 +210,7 @@ def display_upgrade_result(instance: dict, volume: dict, new_size: int) -> None:
     console.print(create_info_table(result))
 
 
-def offer_recovery(client: AWSClient, instance: dict, volume: dict, dry_run: bool = False) -> None:
+def offer_recovery(client: EC2Client, instance: dict, volume: dict, dry_run: bool = False) -> None:
     """Offer detach/reattach recovery option."""
     console.print("\n[bold #ccff00]Recovery Options:[/]\n")
     console.print("The system can attempt to recover by detaching and reattaching the volume.")
@@ -222,7 +222,7 @@ def offer_recovery(client: AWSClient, instance: dict, volume: dict, dry_run: boo
 
 
 def run_recovery(
-    client: AWSClient, instance: dict, volume: dict, dry_run: bool = False
+    client: EC2Client, instance: dict, volume: dict, dry_run: bool = False
 ) -> None:
     """Execute detach/reattach recovery flow."""
     print_header("Detach/Attach Recovery")

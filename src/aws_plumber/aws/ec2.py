@@ -1,4 +1,4 @@
-"""Base AWS client for EC2 and EBS operations."""
+"""AWS EC2 and EBS service client."""
 
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
@@ -6,7 +6,7 @@ from typing import Optional
 from ..ui.theme import print_error, print_info
 
 
-class AWSClient:
+class EC2Client:
     """Wrapper for AWS EC2/EBS service operations."""
 
     def __init__(self, region: Optional[str] = None):
