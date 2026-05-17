@@ -1,33 +1,29 @@
 """Tests for WAFClient."""
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 from aws_plumber.aws.waf import WAFClient
 
 
-@patch("aws_plumber.aws.waf.boto3.client")
-def test_waf_client_initialization(mock_boto_client):
+def test_waf_client_initialization():
     """Test WAFClient initialization."""
-    mock_waf_client = MagicMock()
-    mock_boto_client.return_value = mock_waf_client
-
-    waf_client = WAFClient(region="us-east-1")
+    mock_waf = MagicMock()
+    mock_logs = MagicMock()
+    waf_client = WAFClient(region="us-east-1", waf_client=mock_waf, logs_client=mock_logs)
     assert waf_client.region == "us-east-1"
-    mock_boto_client.assert_called()
+    assert waf_client.waf_client is mock_waf
+    assert waf_client.logs_client is mock_logs
 
 
-@patch("aws_plumber.aws.waf.boto3.client")
-def test_waf_client_list_resources(mock_boto_client):
+def test_waf_client_list_resources():
     """Test listing WAF resources."""
-    mock_waf_client = MagicMock()
-    mock_boto_client.return_value = mock_waf_client
-
-    mock_waf_client.list_web_acls.return_value = {
+    mock_waf = MagicMock()
+    mock_waf.list_web_acls.return_value = {
         "WebACLs": [
             {"Name": "test-acl", "ARN": "arn:aws:wafv2:us-east-1:123456789012:global/webacl/test/a1234567"}
         ]
     }
 
-    waf_client = WAFClient(region="us-east-1")
+    waf_client = WAFClient(region="us-east-1", waf_client=mock_waf, logs_client=MagicMock())
     resources = waf_client.list_waf_resources("REGIONAL")
 
     assert len(resources) == 1

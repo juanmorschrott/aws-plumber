@@ -9,11 +9,16 @@ from ..ui.theme import print_error
 class WAFClient:
     """Wrapper for AWS WAF operations."""
 
-    def __init__(self, region: str):
-        """Initialize WAF client."""
+    def __init__(
+        self,
+        region: str,
+        waf_client: Optional[object] = None,
+        logs_client: Optional[object] = None,
+    ):
+        """Initialize WAF client with optional pre-built boto3 clients."""
         self.region = region
-        self.waf_client = boto3.client("wafv2", region_name=region)
-        self.logs_client = boto3.client("logs", region_name=region)
+        self.waf_client = waf_client or boto3.client("wafv2", region_name=region)
+        self.logs_client = logs_client or boto3.client("logs", region_name=region)
 
     def list_waf_resources(self, scope: str = "REGIONAL") -> list[dict]:
         """List WAF Web ACLs."""

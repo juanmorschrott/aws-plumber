@@ -9,16 +9,21 @@ from ..ui.theme import print_error, print_info
 class EC2Client:
     """Wrapper for AWS EC2/EBS service operations."""
 
-    def __init__(self, region: Optional[str] = None):
-        """Initialize AWS client with optional region."""
-        self.region = region or boto3.session.Session().region_name
+    def __init__(
+        self,
+        region: Optional[str] = None,
+        session: Optional[boto3.session.Session] = None,
+    ):
+        """Initialize EC2 client with optional region and boto3 session."""
+        self._session = session or boto3.session.Session()
+        self.region = region or self._session.region_name
         self.ec2 = None
         self.ec2_client = None
 
     def validate_credentials(self) -> bool:
         """Validate AWS credentials are available."""
         try:
-            sts = boto3.client("sts", region_name=self.region)
+            sts = self._session.client("sts", region_name=self.region)
             sts.get_caller_identity()
             return True
         except NoCredentialsError:
@@ -33,7 +38,7 @@ class EC2Client:
     def get_regions(self) -> list[str]:
         """Get list of available AWS regions."""
         try:
-            ec2 = boto3.client("ec2")
+            ec2 = self._session.client("ec2")
             response = ec2.describe_regions()
             return sorted([r["RegionName"] for r in response["Regions"]])
         except ClientError as error:
@@ -45,8 +50,8 @@ class EC2Client:
     def set_region(self, region: str) -> None:
         """Set the AWS region."""
         self.region = region
-        self.ec2 = boto3.resource("ec2", region_name=region)
-        self.ec2_client = boto3.client("ec2", region_name=region)
+        self.ec2 = self._session.resource("ec2", region_name=region)
+        self.ec2_client = self._session.client("ec2", region_name=region)
 
     def get_instances(self) -> list[dict]:
         """Get list of running/stopped EC2 instances."""

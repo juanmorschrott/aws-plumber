@@ -14,3 +14,9 @@ applyTo: "**/*.py"
 - Raise meaningful exceptions; never silence errors with bare `except:` clauses.
 - When catching `botocore.exceptions.ClientError`, always extract and propagate the error message from `error.response["Error"]["Code"]` and `error.response["Error"]["Message"]`. Never return a silent `False` or empty list without logging the reason.
 - Do not add comments that merely restate what the code does — code should be self-documenting.
+
+## Testing
+
+- **Prefer dependency injection over `@patch` for boto3 clients and sessions.** Accept an optional `session: boto3.session.Session` in AWS client constructors; accept optional pre-built boto3 clients where the constructor creates them. Tests pass mock objects directly, avoiding string-based patch paths that silently break when files are renamed or moved.
+- **When `@patch` is unavoidable, always use the fully-qualified module path from the package root** (e.g. `"aws_plumber.aws.ec2.boto3.client"`), never a relative reference or the definition site. Patch where the name is *used*, not where it is *defined*.
+- Do not test implementation details such as which internal print helper was called — assert on return values and observable state changes.
