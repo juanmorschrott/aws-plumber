@@ -5,7 +5,7 @@ import readchar
 from .registry import get_registry
 from .disk_upgrade import run_disk_upgrade
 from .waf_detection import run_waf_detection
-from ..ui.theme import print_header, console, ACCENT_COLOR
+from aws_plumber.ui.theme import print_header, console, ACCENT_COLOR
 
 
 def initialize_tools() -> None:

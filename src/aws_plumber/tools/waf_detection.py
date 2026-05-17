@@ -1,8 +1,8 @@
 """WAF blocking detection tool for identifying WAF-blocked requests."""
 
 from typing import Optional
-from ..aws import EC2Client, WAFClient
-from ..ui.theme import (
+from aws_plumber.aws import EC2Client, WAFClient
+from aws_plumber.ui.theme import (
     print_header, print_success, print_error, print_info, print_warning,
     create_info_table, console, ACCENT_COLOR, create_result_table
 )

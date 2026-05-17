@@ -3,7 +3,7 @@
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
 from typing import Optional
-from ..ui.theme import print_error, print_info
+from aws_plumber.ui.theme import print_error, print_info
 
 
 class EC2Client:

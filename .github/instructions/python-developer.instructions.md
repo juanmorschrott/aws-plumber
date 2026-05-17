@@ -14,6 +14,7 @@ applyTo: "**/*.py"
 - Raise meaningful exceptions; never silence errors with bare `except:` clauses.
 - When catching `botocore.exceptions.ClientError`, always extract and propagate the error message from `error.response["Error"]["Code"]` and `error.response["Error"]["Message"]`. Never return a silent `False` or empty list without logging the reason.
 - Do not add comments that merely restate what the code does — code should be self-documenting.
+- **Always use absolute imports** (`from aws_plumber.X import Y`) instead of relative imports (`from ..X import Y`). Absolute imports are unambiguous regardless of a module's depth in the package hierarchy, and are explicitly recommended by PEP 8.
 
 ## Testing
 

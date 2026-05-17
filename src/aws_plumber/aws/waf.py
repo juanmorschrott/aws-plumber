@@ -3,7 +3,7 @@
 import boto3
 from botocore.exceptions import ClientError
 from typing import Optional
-from ..ui.theme import print_error
+from aws_plumber.ui.theme import print_error
 
 
 class WAFClient:
