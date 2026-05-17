@@ -6,7 +6,7 @@ from typing import Optional
 from ..aws import AWSClient
 from ..ui.theme import (
     print_header, print_success, print_error, print_info, print_warning,
-    create_info_table, console, YELLOW_ACCENT
+    create_info_table, console, ACCENT_COLOR
 )
 
 
@@ -84,7 +84,7 @@ def select_region(client: AWSClient) -> Optional[str]:
     if not regions:
         return None
 
-    console.print("\n[bold #ffcc00]Select Region:[/]\n")
+    console.print("\n[bold #ccff00]Select Region:[/]\n")
     for i, region in enumerate(regions[:10], 1):
         console.print(f"  {i}. {region}")
 
@@ -108,7 +108,7 @@ def select_instance(client: AWSClient) -> Optional[dict]:
         print_error("No instances found")
         return None
 
-    console.print("\n[bold #ffcc00]Select Instance:[/]\n")
+    console.print("\n[bold #ccff00]Select Instance:[/]\n")
     max_display = 10
     for i, inst in enumerate(instances[:max_display], 1):
         state_color = "#00ff00" if inst["state"] == "running" else "#ff9900"
@@ -131,7 +131,7 @@ def select_volume(volumes: list[dict]) -> Optional[dict]:
     if len(volumes) == 1:
         return volumes[0]
 
-    console.print("\n[bold #ffcc00]Select Volume:[/]\n")
+    console.print("\n[bold #ccff00]Select Volume:[/]\n")
     for i, vol in enumerate(volumes, 1):
         console.print(f"  {i}. {vol['id']:<20} {vol['size']}GB {vol['type']:<10} ({vol['device']})")
 
@@ -146,7 +146,7 @@ def select_volume(volumes: list[dict]) -> Optional[dict]:
 
 def get_disk_size(current_size: int) -> Optional[int]:
     """Get new disk size from user."""
-    console.print(f"\n[bold #ffcc00]Current disk size: {current_size}GB[/]")
+    console.print(f"\n[bold #ccff00]Current disk size: {current_size}GB[/]")
     try:
         new_size = int(input("Enter new disk size (GB): ").strip())
         return new_size if new_size > current_size else None
@@ -156,7 +156,7 @@ def get_disk_size(current_size: int) -> Optional[int]:
 
 def display_instance_details(instance: dict) -> None:
     """Display instance information."""
-    console.print("\n[bold #ffcc00]Instance Details:[/]\n")
+    console.print("\n[bold #ccff00]Instance Details:[/]\n")
     details = {
         "Instance ID": instance["id"],
         "Name": instance["name"],
@@ -206,7 +206,7 @@ def display_upgrade_result(instance: dict, volume: dict, new_size: int) -> None:
 
 def offer_recovery(client: AWSClient, instance: dict, volume: dict) -> None:
     """Offer detach/reattach recovery option."""
-    console.print("\n[bold #ffcc00]Recovery Options:[/]\n")
+    console.print("\n[bold #ccff00]Recovery Options:[/]\n")
     console.print("The system can attempt to recover by detaching and reattaching the volume.")
     console.print("This may require stopping the instance.\n")
 
@@ -230,7 +230,7 @@ def run_recovery(client: AWSClient, instance: dict, volume: dict) -> None:
         return
 
     # Display recovery details
-    console.print("\n[bold #ffcc00]Recovery Details:[/]\n")
+    console.print("\n[bold #ccff00]Recovery Details:[/]\n")
     recovery_info = {
         "Instance": instance["id"],
         "Instance State": instance["state"],

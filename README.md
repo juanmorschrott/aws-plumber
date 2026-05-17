@@ -2,15 +2,17 @@
 
 AWS Plumber is an open source Python 3.12 CLI toolbox for automating emergency and outage recovery workflows on AWS.
 
-The project is designed to help operators recover infrastructure quickly, safely, and consistently. The first tool in the toolbox automates EBS disk upgrades and includes recovery flows for detach/attach operations when disk modifications fail.
+The project is designed to help operators recover infrastructure quickly, safely, and consistently. Tools include EBS disk upgrades, recovery flows, and security diagnostics.
 
 ## Key Features
 
-- Lightweight CLI for outage response and infrastructure recovery.
-- First tool: automated EBS disk upgrade with recovery support.
+- Lightweight interactive CLI for outage response and infrastructure recovery.
+- **Upgrade EBS Disk**: Automated EBS disk upgrade with detach/attach recovery support.
+- **Detect WAF Blocking**: Analyze AWS WAF blocking events and identify problematic rules.
 - Control-plane recovery flows for detach and reattach operations.
-- AWS region selection when configuration is unavailable.
-- Backup-first workflow with snapshot or instance backup confirmation.
+- AWS region selection and credential management.
+- Interactive menu with arrow key navigation.
+- Lemon-acid yellow (#ccff00) aesthetic for improved visibility.
 
 ## Getting Started
 
@@ -19,45 +21,61 @@ The project is designed to help operators recover infrastructure quickly, safely
 - Python 3.12
 - `awscliv2` installed and configured
 - Valid AWS credentials in `~/.aws/credentials`
-- `pyproject.toml` for dependency management
 
 ### Installation
 
-1. Clone the repository.
-2. Create and activate a Python 3.12 virtual environment.
-3. Install dependencies from `pyproject.toml`.
+```bash
+cd aws-plumber
+uv sync
+```
 
 ### Usage
 
-Run the CLI from the project root:
-
 ```bash
-aws-plumber
+uv run aws-plumber
 ```
 
-The initial experience includes a main menu with the available operational tools.
+Navigate tools with **↑/↓ arrow keys**, select with **Enter**, or use **numbers** for direct selection.
 
 ## Project Structure
 
-- `README.md` – project overview and getting started guide
-- `docs/use_cases/` – user-facing scenarios and acceptance criteria
-- `docs/skills/` – design guidance for CLI behavior and aesthetic
-- `.github/instructions/` – developer and code-style guidance
+```
+aws_plumber/
+├── aws/                      # AWS service integrations
+│   ├── __init__.py          # Module exports: AWSClient, EnhancedAWSClient, WAFClient
+│   ├── client.py            # Base AWSClient: EC2/EBS operations
+│   └── extended.py          # Extended services: WAFClient, EnhancedAWSClient
+├── tools/                    # Tool implementations
+│   ├── registry.py          # Tool registry system
+│   ├── menu.py              # Interactive tool selection menu
+│   ├── disk_upgrade.py      # EBS disk upgrade tool (UC-002)
+│   └── waf_detection.py     # WAF blocking detection tool (UC-004)
+├── ui/
+│   ├── __init__.py          # UI utilities
+│   └── theme.py             # Styling & UI components
+├── cli.py                   # CLI entry point
+└── __init__.py              # Package initialization
+```
+
+## Available Tools
+
+1. **Upgrade EBS Disk** – Instance selection, volume upgrade, automatic recovery
+2. **Detect WAF Blocking** – WAF scope selection, logging check, event analysis
+
+## Dependencies
+
+- boto3 >=1.43.9 – AWS SDK
+- click >=8.4.0 – CLI framework
+- rich >=15.0.0 – Terminal styling
+- readchar >=4.2.2 – Interactive keyboard input
+- textual >=8.2.6 – TUI support (future)
 
 ## Documentation
 
-- `docs/use_cases/UC-001-run-cli-app.md` – main CLI launch and tool selection flow
-- `docs/use_cases/UC-002-run-disk-upgrade.md` – disk upgrade flow with region selection and recovery
-- `docs/use_cases/UC-003-detach-attach-recovery.md` – detach/attach recovery flow with backup confirmation
-
-## Contributing
-
-Contributions are welcome. Suggested next steps:
-
-- Review the use cases and skills in `docs/`
-- Implement the CLI flow and tool behavior
-- Add tests for the upgrade and recovery workflows
+- `docs/use_cases/` – user-facing scenarios and acceptance criteria
+- `docs/skills/` – CLI appearance and aesthetic guidelines
+- `docs/architecture.md` – system architecture and tool registry pattern
 
 ## License
 
-This project is intended to be open source and can be licensed appropriately by the maintainers.
+This project is intended to be open source.

@@ -2,7 +2,7 @@
 
 from aws_plumber.ui.theme import (
     format_selection_menu,
-    YELLOW_ACCENT,
+    ACCENT_COLOR,
     GRAY_TEXT,
     SUCCESS_COLOR,
     ERROR_COLOR,
@@ -20,7 +20,8 @@ def test_format_selection_menu():
 
 def test_color_constants():
     """Test color constants are defined."""
-    assert YELLOW_ACCENT == "#ffcc00"
+    assert ACCENT_COLOR == "#ccff00"
     assert GRAY_TEXT == "#c0c0c0"
     assert SUCCESS_COLOR == "#00ff00"
     assert ERROR_COLOR == "#ff0000"
+

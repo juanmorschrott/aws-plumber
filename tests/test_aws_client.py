@@ -20,7 +20,7 @@ def test_aws_client_init_no_region():
     assert client.ec2_client is None
 
 
-@patch("aws_plumber.aws.boto3.client")
+@patch("aws_plumber.aws.client.boto3.client")
 def test_aws_client_get_regions(mock_boto_client):
     """Test getting AWS regions."""
     mock_ec2_client = MagicMock()

@@ -10,10 +10,14 @@ The user wants to launch the AWS Plumber CLI and see the available emergency too
 1. User opens a terminal
 2. User executes `aws-plumber`
 3. The application displays a banner with the version and the list of available tools
+4. The user navigates the tool list using up/down arrows and selects a tool with Enter
+5. The selected tool name is shown on the left and its description is displayed on the right
 
 ## Acceptance Criteria
 - `aws-plumber` displays a banner with the application version
-- `aws-plumber` displays the list of available tools
+- `aws-plumber` displays the list of available tools in an interactive menu
+- The main menu supports up/down arrow navigation and Enter selection
+- Selected tool name and description are visible in the UI
 - The initial tool shown is EBS disk upgrade with recovery support
 
 ## Notes
