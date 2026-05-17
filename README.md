@@ -70,7 +70,15 @@ aws_plumber/
 - click >=8.4.0 – CLI framework
 - rich >=15.0.0 – Terminal styling
 - readchar >=4.2.2 – Interactive keyboard input
-- textual >=8.2.6 – TUI support (future)
+
+## IAM Permissions
+
+The following minimum IAM permissions are required:
+
+| Tool | Actions required |
+|---|---|
+| Upgrade EBS Disk | `ec2:DescribeRegions` `ec2:DescribeInstances` `ec2:DescribeVolumes` `ec2:DescribeVolumesModifications` `ec2:ModifyVolume` `ec2:DetachVolume` `ec2:AttachVolume` |
+| Detect WAF Blocking | `wafv2:ListWebACLs` `wafv2:GetLoggingConfiguration` `logs:FilterLogEvents` |
 
 ## Documentation
 

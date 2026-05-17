@@ -12,4 +12,5 @@ applyTo: "**/*.py"
 - Keep functions small and focused on a single responsibility.
 - Avoid unnecessary abstractions, classes, or indirection when a plain function or expression suffices.
 - Raise meaningful exceptions; never silence errors with bare `except:` clauses.
+- When catching `botocore.exceptions.ClientError`, always extract and propagate the error message from `error.response["Error"]["Code"]` and `error.response["Error"]["Message"]`. Never return a silent `False` or empty list without logging the reason.
 - Do not add comments that merely restate what the code does — code should be self-documenting.

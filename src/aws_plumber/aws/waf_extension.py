@@ -3,6 +3,7 @@
 import boto3
 from botocore.exceptions import ClientError
 from typing import Optional
+from ..ui.theme import print_error
 
 
 class WAFClient:
@@ -19,7 +20,10 @@ class WAFClient:
         try:
             response = self.waf_client.list_web_acls(Scope=scope)
             return response.get("WebACLs", [])
-        except ClientError:
+        except ClientError as error:
+            code = error.response["Error"]["Code"]
+            message = error.response["Error"]["Message"]
+            print_error(f"Failed to list WAF Web ACLs [{code}]: {message}")
             return []
 
     def get_waf_logs_config(self, web_acl_arn: str) -> Optional[dict]:
@@ -27,7 +31,12 @@ class WAFClient:
         try:
             response = self.waf_client.get_logging_configuration(ResourceArn=web_acl_arn)
             return response.get("LoggingConfiguration")
-        except ClientError:
+        except ClientError as error:
+            code = error.response["Error"]["Code"]
+            message = error.response["Error"]["Message"]
+            print_error(
+                f"Failed to fetch WAF logging configuration for {web_acl_arn} [{code}]: {message}"
+            )
             return None
 
     def get_recent_blocking_events(
@@ -74,5 +83,10 @@ class WAFClient:
                 results.append(result)
 
             return results
-        except ClientError:
+        except ClientError as error:
+            code = error.response["Error"]["Code"]
+            message = error.response["Error"]["Message"]
+            print_error(
+                f"Failed to fetch WAF blocking events from {log_group_name} [{code}]: {message}"
+            )
             return []

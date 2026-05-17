@@ -9,7 +9,6 @@ dependencies = [
     "click>=8.4.0",
     "readchar>=4.2.2",
     "rich>=15.0.0",
-    "textual>=8.2.6",
 ]
 
 [project.scripts]

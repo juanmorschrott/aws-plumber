@@ -2,6 +2,7 @@
 
 import boto3
 from botocore.exceptions import ClientError
+from ..ui.theme import print_error
 
 
 class ALBClient:
@@ -17,7 +18,10 @@ class ALBClient:
         try:
             response = self.elb_client.describe_load_balancers()
             return response.get("LoadBalancers", [])
-        except ClientError:
+        except ClientError as error:
+            code = error.response["Error"]["Code"]
+            message = error.response["Error"]["Message"]
+            print_error(f"Failed to list ALBs [{code}]: {message}")
             return []
 
     def get_target_groups(self) -> list[dict]:
@@ -25,7 +29,10 @@ class ALBClient:
         try:
             response = self.elb_client.describe_target_groups()
             return response.get("TargetGroups", [])
-        except ClientError:
+        except ClientError as error:
+            code = error.response["Error"]["Code"]
+            message = error.response["Error"]["Message"]
+            print_error(f"Failed to list ALB target groups [{code}]: {message}")
             return []
 
     def get_target_health(self, target_group_arn: str) -> list[dict]:
@@ -33,5 +40,10 @@ class ALBClient:
         try:
             response = self.elb_client.describe_target_health(TargetGroupArn=target_group_arn)
             return response.get("TargetHealthDescriptions", [])
-        except ClientError:
+        except ClientError as error:
+            code = error.response["Error"]["Code"]
+            message = error.response["Error"]["Message"]
+            print_error(
+                f"Failed to fetch target health for {target_group_arn} [{code}]: {message}"
+            )
             return []

@@ -9,14 +9,15 @@ from ..ui.theme import (
 )
 
 
-def run_waf_detection() -> None:
+def run_waf_detection(dry_run: bool = False) -> None:
     """Run the WAF blocking detection workflow."""
     print_header("WAF Blocking Detection Tool")
+    if dry_run:
+        print_info("Dry-run mode enabled: this tool is read-only and will not modify AWS resources.")
 
     client = EnhancedAWSClient()
 
     if not client.validate_credentials():
-        print_error("AWS credentials not found or invalid")
         print_info("Please configure AWS credentials in ~/.aws/credentials or set environment variables")
         return
 

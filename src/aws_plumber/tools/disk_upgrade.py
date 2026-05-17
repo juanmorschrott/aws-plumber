@@ -10,16 +10,17 @@ from ..ui.theme import (
 )
 
 
-def run_disk_upgrade() -> None:
+def run_disk_upgrade(dry_run: bool = False) -> None:
     """Run the disk upgrade workflow."""
     print_header("EBS Disk Upgrade Tool")
+    if dry_run:
+        print_info("Dry-run mode enabled: write operations will be simulated.")
 
     # Initialize AWS client
     client = AWSClient()
 
     # Validate credentials
     if not client.validate_credentials():
-        print_error("AWS credentials not found or invalid")
         print_info("Please configure AWS credentials in ~/.aws/credentials or set environment variables")
         return
 
@@ -63,8 +64,13 @@ def run_disk_upgrade() -> None:
     print_header("Starting Disk Upgrade")
     print_info(f"Upgrading volume {volume['id']} from {volume['size']}GB to {new_size}GB")
 
-    if not client.modify_volume_size(volume["id"], new_size):
+    if not client.modify_volume_size(volume["id"], new_size, dry_run=dry_run):
         print_error("Failed to initiate volume modification")
+        return
+
+    if dry_run:
+        print_success("Dry-run completed successfully. No changes were applied.")
+        display_upgrade_result(instance, volume, new_size)
         return
 
     # Wait for modification and check status
@@ -74,7 +80,7 @@ def run_disk_upgrade() -> None:
     else:
         print_error("Volume modification failed or timed out")
         print_warning("\nDetach/Attach Recovery Available")
-        offer_recovery(client, instance, volume)
+        offer_recovery(client, instance, volume, dry_run=dry_run)
 
 
 def select_region(client: AWSClient) -> Optional[str]:
@@ -204,7 +210,7 @@ def display_upgrade_result(instance: dict, volume: dict, new_size: int) -> None:
     console.print(create_info_table(result))
 
 
-def offer_recovery(client: AWSClient, instance: dict, volume: dict) -> None:
+def offer_recovery(client: AWSClient, instance: dict, volume: dict, dry_run: bool = False) -> None:
     """Offer detach/reattach recovery option."""
     console.print("\n[bold #ccff00]Recovery Options:[/]\n")
     console.print("The system can attempt to recover by detaching and reattaching the volume.")
@@ -212,10 +218,12 @@ def offer_recovery(client: AWSClient, instance: dict, volume: dict) -> None:
 
     confirm = input("[Y/n] Proceed with recovery? ").strip().lower()
     if confirm in ("y", ""):
-        run_recovery(client, instance, volume)
+        run_recovery(client, instance, volume, dry_run=dry_run)
 
 
-def run_recovery(client: AWSClient, instance: dict, volume: dict) -> None:
+def run_recovery(
+    client: AWSClient, instance: dict, volume: dict, dry_run: bool = False
+) -> None:
     """Execute detach/reattach recovery flow."""
     print_header("Detach/Attach Recovery")
 
@@ -244,8 +252,8 @@ def run_recovery(client: AWSClient, instance: dict, volume: dict) -> None:
     # Stop instance if running
     if instance["state"] == "running":
         print_info("Stopping instance...")
-        if client.stop_instance(instance["id"]):
-            if client.wait_for_instance_stopped(instance["id"]):
+        if client.stop_instance(instance["id"], dry_run=dry_run):
+            if dry_run or client.wait_for_instance_stopped(instance["id"]):
                 print_success("Instance stopped")
             else:
                 print_error("Timeout waiting for instance to stop")
@@ -256,8 +264,8 @@ def run_recovery(client: AWSClient, instance: dict, volume: dict) -> None:
 
     # Detach volume
     print_info("Detaching volume...")
-    if client.detach_volume(volume["id"], instance["id"]):
-        if client.wait_for_volume_available(volume["id"]):
+    if client.detach_volume(volume["id"], instance["id"], dry_run=dry_run):
+        if dry_run or client.wait_for_volume_available(volume["id"]):
             print_success("Volume detached")
         else:
             print_error("Timeout waiting for volume to detach")
@@ -268,7 +276,9 @@ def run_recovery(client: AWSClient, instance: dict, volume: dict) -> None:
 
     # Reattach volume
     print_info("Reattaching volume...")
-    if client.reattach_volume(volume["id"], instance["id"], volume["device"]):
+    if client.reattach_volume(
+        volume["id"], instance["id"], volume["device"], dry_run=dry_run
+    ):
         print_success("Volume reattached")
     else:
         print_error("Failed to reattach volume")
@@ -277,8 +287,8 @@ def run_recovery(client: AWSClient, instance: dict, volume: dict) -> None:
     # Start instance if it was running
     if instance["state"] == "running":
         print_info("Starting instance...")
-        if client.start_instance(instance["id"]):
-            if client.wait_for_instance_running(instance["id"]):
+        if client.start_instance(instance["id"], dry_run=dry_run):
+            if dry_run or client.wait_for_instance_running(instance["id"]):
                 print_success("Instance started")
             else:
                 print_error("Timeout waiting for instance to start")

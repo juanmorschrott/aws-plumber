@@ -25,6 +25,11 @@ This makes the toolbox easier to extend and helps contributors find the implemen
 - New tools can be added by creating a new module under the tools package and registering it once.
 - Tool behavior is isolated so changes to one tool do not affect unrelated tools.
 
+## AWS Client Patterns
+
+- **Never use `resource.instances.all()` or equivalent unbounded collection calls.** Always pass server-side filters directly to the API call (e.g. `describe_instances(Filters=[...])`) to avoid fetching unnecessary resources and consuming API quota.
+- **Region detection must respect boto3's resolution chain.** Do not force manual region selection if the user already has a region configured via `AWS_DEFAULT_REGION`, `AWS_PROFILE`, or `~/.aws/config`. Only prompt for region when `boto3.session.Session().region_name` returns `None`.
+
 ## Notes
 - This skill is about project organization and maintainability, not the CLI appearance.
 - A modular structure supports easier testing and incremental development.
